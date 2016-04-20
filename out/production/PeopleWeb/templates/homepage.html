@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<body>
+{{#people}}
+<a href="/person?id={{id}}"> {{firstName}} {{lastName}} </br> </a>
+{{/people}}
+
+{{^isZero}}
+<form action="/previous" method="post">
+    <button>Previous 20 Contacts</button>
+</form>
+{{/isZero}}
+
+<form action="/next" method="post">
+    <button>Next 20 Contacts</button>
+</form>
+
+</body>
+</html>
