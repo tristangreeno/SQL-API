@@ -4,14 +4,18 @@ import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 
 public class Main {
 
-    public static void main(String[] args) throws FileNotFoundException {
-        ReadPersonFile.ReadPeopleFile();
+    public static void main(String[] args) throws FileNotFoundException, SQLException {
+        Connection conn = Sql.startConnection();
+        Sql.createTables(conn);
+        ReadPersonFile.populateDatabase(conn);
 
         Spark.init();
 
@@ -28,9 +32,7 @@ public class Main {
                         offset = Integer.valueOf(offsetStr);
                     }
 
-                    ArrayList<Person> offsetPersons = new ArrayList<>();
-
-                    for(int i = 0; i < 20; i++) offsetPersons.add(ReadPersonFile.persons.get(i + offset));
+                    ArrayList<Person> offsetPersons = Sql.selectPeople(conn, offset);
 
                     s.attribute("offset", offset);
 
@@ -55,7 +57,7 @@ public class Main {
                     Integer id = Integer.valueOf(request.queryParams("id"));
 
                     // Subtract one to get correct index
-                    Person p = ReadPersonFile.persons.get(id - 1);
+                    Person p = Sql.selectPerson(conn, id);
 
                     m.put("person", p);
                     return new ModelAndView(m, "person.html");

@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -8,8 +10,7 @@ import java.util.Scanner;
  */
 public class ReadPersonFile {
     public static ArrayList<Person> persons = new ArrayList<>();
-
-    static void ReadPeopleFile() throws FileNotFoundException {
+    static ArrayList<Person> populateDatabase(Connection conn) throws FileNotFoundException, SQLException {
         File f = new File("src/people.csv");
         Scanner scanner = new Scanner(f);
         scanner.nextLine();
@@ -21,5 +22,11 @@ public class ReadPersonFile {
                     columns[4], columns[5]);
             persons.add(p);
         }
+
+        for (Person p : persons) {
+            Sql.insertPerson(conn, p.firstName, p.lastName, p.email, p.country, p.ipAddress);
+        }
+
+        return persons;
     }
 }
